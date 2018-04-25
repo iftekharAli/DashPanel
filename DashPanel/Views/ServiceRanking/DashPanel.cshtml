@@ -1,0 +1,172 @@
+﻿@model DashPanel.Models.ServiceRanking
+
+@{
+    ViewBag.Title = "DashPanel";
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+<h2>DashPanel</h2>
+
+<div ng-app="myApp" ng-controller="cntrl">
+
+    <div class="form-horizontal">
+        <h4>Operator Wise Closing Base</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.FromDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <input type="date" ng-model="FromDate" class="form-control" />
+                    @*@Html.EditorFor(model => model.FromDate, new {htmlAttributes = new {@class = "form-control", ng_model = "FromDate"}})*@
+                    @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <input type="date" ng-model="EndDate" id="qq" class="form-control" />
+                    @*@Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control", ng_model = "EndDate" } })*@
+                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Search" class="btn btn-default" ng-click="sub()" />
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <div ng-show="ss">
+        <div class="text-center">
+                
+            <i class="fa fa-refresh fa-spin fa-3x fa-fw" style="font-size: 98px"></i>
+        </div>
+    </div>
+    <div ng-show="All">
+    <div class="row">
+        @*<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+            <h2 class="text-center" style="background-color: black; color: white">Dash Panel</h2>
+
+        </div>*@
+
+      
+
+        <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12" id="dashChart">
+
+
+        </div>
+
+    </div>
+
+    </div>
+</div>
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+    <script>
+         var raw = "http://wap.shabox.mobi/dashboard/api/";
+       // var raw = "../api/";
+        var app = angular.module('myApp', []);
+        app.controller('cntrl',
+            function ($scope, $http, $timeout) {
+                $scope.ss = false;           
+                $scope.All = false;   
+
+                $scope.sub = function () {
+                    $scope.ss = true;           
+                    $scope.All = false;  
+                    var data = {
+                        FromDate: $scope.FromDate,
+                        EndDate: $scope.EndDate
+                    }
+                    $http.post(raw + 'ServiceRanking/GetLineChartData', data).then(function(response) {
+                        $scope.buddyList = response.data;
+                        PlotClubzClosing(response.data);
+                    });
+
+                    $timeout(function () {
+                        $scope.ss = false;     
+                        $scope.All = true; 
+                    }, 500);
+                  
+                };
+
+
+            });
+
+
+        function PlotClubzClosing(data) {
+
+            $('#dashChart').empty();
+            $('#dashChart').append('<canvas id="dashAll" width="100%" ></canvas>');
+
+            var ctx = document.getElementById("dashAll").getContext("2d");
+            var data = {
+                labels: data.map(a => a.ServiceName),
+                datasets: [
+                    {
+                        label: "All Services",
+                        backgroundColor: "Red",
+                        fill: false,
+                        data: data.map(a => a.Performance)
+                    }
+                ]
+            };
+
+
+            var myPieChart = new Chart(ctx,
+                {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        Legeng: {
+                            display: true
+                        },
+                        ticks: {
+                            autoSkip: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Service Performance at galance'
+                        },
+                        scales: {
+                            xAxes: [
+                                {
+                                    stacked: false,
+                                    beginAtZero: true,
+                                    scaleLabel: {
+                                        labelString: 'Month'
+                                    },
+                                    ticks: {
+                                        stepSize: 1,
+                                        min: 0,
+                                        autoSkip: false
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                });
+
+
+        }
+
+
+    </script>
+}

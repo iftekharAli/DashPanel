@@ -1,0 +1,531 @@
+﻿@using System.Collections
+@model DashPanel.Models.ServiceRanking
+
+@{
+    ViewBag.Title = "Index";
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+<h2>Index</h2>
+
+<div ng-app="myApp" ng-controller="cntrl">
+    <div>
+
+        <div class="form-horizontal">
+            <h4>Service Ranking</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @*<div class="form-group">
+                @Html.LabelFor(model => model.ServiceName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.ServiceName, new SelectList((IEnumerable)ViewData["ServiceName"], "Id", "ServiceName"), "Select Service", new { @class = "form-control", ng_model = "ServiceName" })
+                    @Html.ValidationMessageFor(model => model.ServiceName, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.FromDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <input type="date" ng-model = "FromDate" class="form-control"/>
+                    @*@Html.EditorFor(model => model.FromDate, new {htmlAttributes = new {@class = "form-control", ng_model = "FromDate"}})*@
+                    @Html.ValidationMessageFor(model => model.FromDate, "", new {@class = "text-danger"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <input type="date" ng-model="EndDate" class="form-control" />
+                    @*@Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control", ng_model = "EndDate" } })*@
+                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Search" class="btn btn-default" ng-click="sub()" />
+                </div>
+            </div>
+        </div>
+
+
+
+        <div ng-show="SS">
+            <div class="row">
+               
+                <div ng-show="Main1">
+                    <div class="text-center" ng-show="part1R">
+                
+                        <i class="fa fa-refresh fa-spin fa-3x fa-fw" style="font-size: 98px"></i>
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-sm-6 col-xs-6" ng-show="part11">
+
+                        <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                            <h2 class="text-center" style="background-color: black; color: white">Top 5 ANS/D services</h2>
+
+                        </div>
+
+                        <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                            <br/>
+                            <table class="table table-bordered">
+
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Service Name</th>
+                                    <th scope="col">Ans/Day</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="x in ansd">
+                                    <td>{{x.SL}} </td>
+                                    <td>{{x.ServiceName}}</td>
+                                    <td>{{x.Percentage}}</td>
+
+                                </tr>
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-md-6 col-lg-6 col-sm-6 col-xs-6" ng-show="part12">
+
+                        <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                            <h2 class="text-center" style="background-color: black; color: white">Top 5 ACS/D services</h2>
+
+                        </div>
+
+                        <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                            <br/>
+                            <table class="table table-bordered">
+
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Service Name</th>
+                                    <th scope="col">ACS/Day</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="x in acsd">
+                                    <td>{{x.SL}} </td>
+                                    <td>{{x.ServiceName}}</td>
+                                    <td>{{x.Percentage}}</td>
+
+                                </tr>
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+            <br/>
+
+            <div class="row">
+                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                    <h2 class="text-center" style="background-color: black; color: white">Churn Rate</h2>
+
+                </div>
+
+                <div class="col-md-4 col-lg-4 col-sm-4 col-xs-4">
+                    <br />
+                    <table class="table table-bordered">
+
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Service Name</th>
+                                <th scope="col">Churn Rate (%)</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in Churnresult">
+                                <td>{{x.SL}} </td>
+                                <td>{{x.ServiceName}}</td>
+                                <td>{{x.Percentage}}%</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+                <div class="col-md-offset-2 col-lg-offset-2 col-sm-offset-2 col-md-6 col-lg-6 col-sm-6 col-xs-6" id="churnchart">
+
+
+                </div>
+
+            </div>
+
+            <br />
+            <div class="row">
+                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                    <h2 class="text-center" style="background-color: black; color: white">Growth Rate</h2>
+
+                </div>
+
+                <div class="col-md-4 col-lg-4 col-sm-4 col-xs-4">
+                    <br />
+                    <table class="table table-bordered">
+
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Service Name</th>
+                                <th scope="col">Churn Rate (%)</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in Growthresult">
+                                <td>{{x.SL}} </td>
+                                <td>{{x.ServiceName}}</td>
+                                <td>{{x.Percentage}}%</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+                <div class="col-md-offset-2 col-lg-offset-2 col-sm-offset-2 col-md-6 col-lg-6 col-sm-6 col-xs-6" id="growthchart">
+
+
+                </div>
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            var date_input = $('input[name="FromDate"]'); //our date input has the name "date"
+            var date_input1 = $('input[name="EndDate"]'); //our date input has the name "date"
+            var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            });
+            date_input1.datepicker({
+                format: 'mm/dd/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+            });
+        });
+
+    </script>
+    <script>
+        var raw = "http://wap.shabox.mobi/dashboard/";
+       // var raw = "../";
+        var app = angular.module('myApp', []);
+        app.controller('cntrl', function ($scope, $http) {
+
+
+            $scope.sub = function () {
+                $scope.part1R = true;
+                $scope.part12 = false;
+                $scope.part11 = false;
+                $scope.Main1 = true;
+
+                var data = {
+
+                    FromDate: $scope.FromDate,
+                    EndDate: $scope.EndDate
+                }
+                console.log(data);
+
+                $http.post(raw+'api/ServiceRanking/GetTop5ChurnServiceReport', data).then(function (response) {
+                    $scope.Churnresult = response.data;
+                    PlotChurnResult(response.data);
+                });
+
+                $http.post(raw +'api/ServiceRanking/GetTop5GrowthServiceReport', data).then(function (response) {
+                    $scope.Growthresult = response.data;
+                    PlotGrowthResult(response.data);
+                });
+
+
+
+
+
+                $http.post(raw +'api/ServiceRanking/GetTop5AnsdReport', data).then(function (response) {
+                    $scope.ansd = response.data;
+                    $scope.part11 = true;
+                    $http.post(raw +'api/ServiceRanking/GetTop5AcsdReport', data).then(function (response) {
+                        $scope.acsd = response.data;
+                        $scope.part12 = true;
+                        $scope.part11 = true;
+                        $scope.part1R = false;
+
+                    });
+                });
+               
+
+                $scope.SS = true;
+            }
+
+
+
+
+        });
+
+
+        function PlotChurnResult(data) {
+            var myBarChart = null;
+            if ($('#churnchart').empty()) {
+                $('#churnchart').append('<canvas id="churnchartmyChart" width="150" height="250" ></canvas>');
+            }
+
+            var ctx = document.getElementById("churnchartmyChart").getContext("2d");
+
+
+            ctx.height = 10;
+            // console.log(data.map(a => a.CommunicationSkills));
+
+            var data = {
+
+                labels: data.map(a => a.ServiceName),
+                datasets: [
+                    {
+                        label: "Top 5 Churned Service",
+                        backgroundColor: data.map(a => a.Color),
+                        data: data.map(a => a.Percentage)
+                    }
+                    //{
+                    //    label: "Top 5 Churned TEST",
+                    //    backgroundColor: "#404040",
+                    //    data: data.map(a => a.Percentage)
+                    //},
+                    //{
+                    //    label: "CustomerService",
+                    //    backgroundColor: "#66c2ff",
+                    //    data: data.map(a => a.CustomerService)
+                    //},
+                    //{
+                    //    label: "ProblemSolving",
+                    //    backgroundColor: "#b3b3b3",
+                    //    data: data.map(a => a.ProblemSolving)
+                    //},
+                    //{
+                    //    label: "TroubleShooting",
+                    //    backgroundColor: "#ff6600",
+                    //    data: data.map(a => a.TroubleShooting)
+                    //},
+                    //{
+                    //    label: "EmailWriting",
+                    //    backgroundColor: "#ffcc00",
+                    //    data: data.map(a => a.EmailWriting)
+                    //},
+                    //{
+                    //    label: "Mentoring",
+                    //    backgroundColor: "#802b00",
+                    //    data: data.map(a => a.Mentoring)
+                    //},
+                    //{
+                    //    label: "TeamWork",
+                    //    backgroundColor: "#0066ff",
+                    //    data: data.map(a => a.TeamWork)
+                    //},
+                    //{
+                    //    label: "LeaderShip",
+                    //    backgroundColor: "#33cc33",
+                    //    data: data.map(a => a.LeaderShip)
+                    //},
+                    //{
+                    //    label: "Management",
+                    //    backgroundColor: "#000099",
+                    //    data: data.map(a => a.Management)
+                    //}
+                ]
+            };
+
+            myBarChart = new Chart(ctx,
+                {
+                    type: 'bar',
+                    data: data,
+                    options: {
+
+                        legend: {
+                            display: true,
+                            labels: {
+
+                                boxWidth: 5
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Churn Bar Chart'
+                        },
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        barValueSpacing: 0,
+                        scales: {
+                            yAxes: [
+
+                                {
+                                    ticks: {
+                                        min: 0
+                                    }
+                                }
+                            ],
+                            xAxes: [{
+                                categoryPercentage: 0.7,
+                                barPercentage: 0.5
+                            }]
+                        }
+                    }
+                });
+
+
+        }
+        function PlotGrowthResult(data) {
+            var myBarChart = null;
+            if ($('#growthchart').empty()) {
+                $('#growthchart').append('<canvas id="growthchartmyChart" width="150" height="250" ></canvas>');
+            }
+
+            var ctx = document.getElementById("growthchartmyChart").getContext("2d");
+
+
+            ctx.height = 10;
+            // console.log(data.map(a => a.CommunicationSkills));
+
+            var data = {
+
+                labels: data.map(a => a.ServiceName),
+                datasets: [
+                    {
+                        label: "Top 5 Growth Service",
+                        backgroundColor: data.map(a => a.Color),
+                        data: data.map(a => a.Percentage)
+                    }
+                    //{
+                    //    label: "Top 5 Churned TEST",
+                    //    backgroundColor: "#404040",
+                    //    data: data.map(a => a.Percentage)
+                    //},
+                    //{
+                    //    label: "CustomerService",
+                    //    backgroundColor: "#66c2ff",
+                    //    data: data.map(a => a.CustomerService)
+                    //},
+                    //{
+                    //    label: "ProblemSolving",
+                    //    backgroundColor: "#b3b3b3",
+                    //    data: data.map(a => a.ProblemSolving)
+                    //},
+                    //{
+                    //    label: "TroubleShooting",
+                    //    backgroundColor: "#ff6600",
+                    //    data: data.map(a => a.TroubleShooting)
+                    //},
+                    //{
+                    //    label: "EmailWriting",
+                    //    backgroundColor: "#ffcc00",
+                    //    data: data.map(a => a.EmailWriting)
+                    //},
+                    //{
+                    //    label: "Mentoring",
+                    //    backgroundColor: "#802b00",
+                    //    data: data.map(a => a.Mentoring)
+                    //},
+                    //{
+                    //    label: "TeamWork",
+                    //    backgroundColor: "#0066ff",
+                    //    data: data.map(a => a.TeamWork)
+                    //},
+                    //{
+                    //    label: "LeaderShip",
+                    //    backgroundColor: "#33cc33",
+                    //    data: data.map(a => a.LeaderShip)
+                    //},
+                    //{
+                    //    label: "Management",
+                    //    backgroundColor: "#000099",
+                    //    data: data.map(a => a.Management)
+                    //}
+                ]
+            };
+
+            myBarChart = new Chart(ctx,
+                {
+                    type: 'bar',
+                    data: data,
+                    options: {
+
+                        legend: {
+                            display: true,
+                            labels: {
+
+                                boxWidth: 5
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Growth Bar Chart'
+                        },
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        barValueSpacing: 0,
+                        scales: {
+                            yAxes: [
+
+                                {
+                                    ticks: {
+                                        min: 0
+                                    }
+                                }
+                            ],
+                            xAxes: [{
+                                categoryPercentage: 0.7,
+                                barPercentage: 0.5
+                            }]
+                        }
+                    }
+                });
+
+
+        }
+    </script>
+}
